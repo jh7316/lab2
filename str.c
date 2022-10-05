@@ -13,6 +13,15 @@
 int string_len(char *s)
 {
   // TODO: Your code here.
+  int c=0;
+  //run loop until string ends 
+    while(*s!='\0')
+    {   
+        //increase counter variable
+        c++;
+        *s++;
+    }
+    return c;
 
 }
 
@@ -30,7 +39,21 @@ int string_len(char *s)
 // it is recommended that you use strcmp instead of string_cmp.
 int string_cmp(char *s1, char *s2)
 {
-  // TODO: Your code here.
+   // TODO: Your code here.
+  while(*s1!='\0'||*s2!='\0'){
+          //compare character of current position
+          if(*s1>*s2) return 1;
+           else if(*s1<*s2) return -1;
+           else{
+          //move onto the next position
+          *s1++;*s2++;
+          
+          }
+      
+      
+
+   }
+   return 0;
 
 }
 
@@ -43,6 +66,26 @@ int string_cmp(char *s1, char *s2)
 // Note: please do not use formatted output, such as sprintf
 void int_to_hex(unsigned int x, char *str)
 {
-  // TODO: Your code here.
+   // TODO: Your code here.
+  //divide x by 16. store the quotient and remainder.
+  int r=x%16;
+  int q=x/16;
+  int i=7;
+  //store the remainder to str array from the right end.
+  //if r<10, we store the number value of r, which is +48 value in ASCII table 
+  //if r>=10, we store the alphabet, which is +87 value in ASCII
+  if(r<10) str[i]=r+ 48;else str[i]=r + 87;
+  //process continues until the quotient becomes 0
+  while(q!=0){
+      r=q%16;
+      q=q/16;
+      i--;if(r<10) str[i]=r+ 48;else str[i]=r + 87;
+     
+  }
+  for(int j=0;j<i;j++){
+      str[j]='0';
+  }
+
 }
+
 
