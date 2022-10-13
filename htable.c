@@ -17,6 +17,12 @@
 htable_t *htable_create(unsigned int capacity)
 {
   //TODO: Your code here
+  htable_t * table = malloc(sizeof(htable_t));
+  table->arr_capacity = capacity;
+  lnode_t ** act_arr = malloc(sizeof(lnode_t*) * capacity);
+  table->arr = act_arr;
+  return table;
+
 }
 
 // This function is used internally by the hash table to calculate 
@@ -28,6 +34,15 @@ htable_t *htable_create(unsigned int capacity)
 unsigned int hashcode(char *s)
 { 
   //TODO: Your code here
+  int i = 0;
+  unsigned int h = 0;
+  int n = strlen(s);
+  while(s[i] != '\0') {
+    h = 31*h + s[i];
+    i++;
+  }
+  return h;
+
 }
 
 // This function inserts a key value pair to the hash table.
@@ -46,6 +61,10 @@ void htable_put(htable_t *ht, char *key, int val,
     void (*accum)(int *existing_val, int new_val))
 {
   //TODO: Your code here
+  unsigned int h = hashcode(key);
+  unsigned int i = h % ht->arr_capacity;
+  list_insert_with_accum(&(ht->arr[i]), key, val, (*accum));
+
 
 }
 
@@ -60,6 +79,10 @@ void htable_put(htable_t *ht, char *key, int val,
 int htable_get(htable_t *ht, char *key)
 {
   //TODO: Your code here
+  unsigned int h = hashcode(key);
+  unsigned int i = h % ht->arr_capacity;
+  return list_find(ht->arr[i], key);
+
 }
 
 // Traverse the hash table pointed to by "ht" and store 
@@ -73,4 +96,19 @@ int htable_get(htable_t *ht, char *key)
 int htable_get_all_tuples(htable_t *ht, kv_t *tuples, int max)
 {
   //TODO: Your code here
+  int count = 0;
+  int i = 0;
+  while(count < max && i < ht->arr_capacity){
+    lnode_t* curr = ht->arr[i];
+    while(curr){
+      tuples[count] = curr->tuple;
+      curr = curr->next;
+      count++;
+    }
+    i++;
+  }
+  ht->size = count;
+  return count;
+
 }
+
