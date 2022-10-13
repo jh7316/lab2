@@ -100,6 +100,15 @@ bool list_insert_with_accum(lnode_t **headdp, char *key, int val,
 int list_find(lnode_t *headp, char *key)
 {
   // TODO: Your code here
+  lnode_t *curr=headp; 
+  while(curr!=NULL){
+	if(strcmp(key,curr->tuple.key)==0){
+	 return curr->tuple.val;
+       }
+       curr=curr->next;
+  }
+  return -1;
+
 }
 
 // Traverse the linked list starting from node pointed to by "headp" 
@@ -111,4 +120,13 @@ int list_find(lnode_t *headp, char *key)
 int list_get_all_tuples(lnode_t *headp, kv_t *tuples, int max)
 {
   // TODO: Your code here
+  lnode_t *curr=headp;
+  int cnt=0;
+  while(cnt<max && curr!=NULL){
+	tuples[cnt]=curr->tuple;
+       curr=curr->next;
+	cnt++;
+  }
+  return cnt;
 }
+
