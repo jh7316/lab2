@@ -51,6 +51,43 @@ bool list_insert_with_accum(lnode_t **headdp, char *key, int val,
     void (*accum)(int *existing_val, int new_val))
 {
   //TODO: Your code here
+  lnode_t *curr=*headdp;
+  lnode_t *newNode=malloc(sizeof(lnode_t));
+  newNode->tuple.key=key;
+  newNode->tuple.val=val;
+  if(curr==NULL){
+     newNode->next = *headdp;
+     *headdp=newNode;
+     return true;
+  }else{
+     if(strcmp(key,curr->tuple.key)<0){
+        newNode->next=*headdp;
+        *headdp=newNode;
+  	return true;
+     }else{
+	while(curr->next){
+	   if(strcmp(key,(curr->next)->tuple.key)>=0)
+	       curr=curr->next;
+ 	   else
+	       break;
+	}
+	if(strcmp(key,curr->tuple.key)==0){
+	   (*accum)(&(curr->tuple.val),val);
+	   return false;
+	
+	}else{
+	   if(curr->next==NULL)
+	      curr->next=newNode;
+	   else{
+	      newNode->next=curr->next;
+	      curr->next=newNode;
+		}
+	   return true;
+	}
+     }
+
+  }
+
 }
 
 // Find if a given key string exists in the sorted linked list.
