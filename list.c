@@ -17,6 +17,8 @@
 void list_init(lnode_t **headdp)
 {
   //TODO: your code here
+  *headdp=NULL;
+
 }
 
 // sum_accum is an accumulator function that adds "new_val" into the 
