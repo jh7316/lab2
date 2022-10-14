@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+
 //Please read through the type declaration in htable.h
 #include "htable.h"
 
@@ -17,10 +18,14 @@
 htable_t *htable_create(unsigned int capacity)
 {
   //TODO: Your code here
-  htable_t * table = malloc(sizeof(htable_t));
+  //2 memory allocations: one for htable, one for hash table array
+  htable_t *table = malloc(sizeof(htable_t));
+  lnode_t **int_arr = malloc(sizeof(lnode_t*) * capacity);
+ 
+ //initializing the table struct fields 
+  table->arr = int_arr;
   table->arr_capacity = capacity;
-  lnode_t ** act_arr = malloc(sizeof(lnode_t*) * capacity);
-  table->arr = act_arr;
+
   return table;
 
 }
@@ -34,16 +39,23 @@ htable_t *htable_create(unsigned int capacity)
 unsigned int hashcode(char *s)
 { 
   //TODO: Your code here
-  int i = 0;
-  unsigned int h = 0;
-  int n = strlen(s);
-  while(s[i] != '\0') {
-    h = 31*h + s[i];
-    i++;
+  int i;
+  unsigned int hcode= 0;
+  int n=strlen(s);
+  int j; int m=1;
+ 
+ //calculate 31^(n-1) using for loop 
+  for(j=0;j<n-1;j++) m*=31; 
+
+  //calculate hcode using for loop
+  for(i=0;i<n;i++){
+    hcode  += s[i]*m; 
+    m/=31; //decrease the exponent of 31  
   }
-  return h;
+  return hcode;
 
 }
+
 
 // This function inserts a key value pair to the hash table.
 // If the key already exists, accumulate the new value into the existing value 
@@ -61,9 +73,9 @@ void htable_put(htable_t *ht, char *key, int val,
     void (*accum)(int *existing_val, int new_val))
 {
   //TODO: Your code here
-  unsigned int h = hashcode(key);
-  unsigned int i = h % ht->arr_capacity;
-  list_insert_with_accum(&(ht->arr[i]), key, val, (*accum));
+  unsigned int hcode = hashcode(key); //step 1)
+  unsigned int i = hcode % ht->arr_capacity; //step 2)
+  list_insert_with_accum(&(ht->arr[i]), key, val, (*accum)); //step 3)
 
 
 }
@@ -79,9 +91,9 @@ void htable_put(htable_t *ht, char *key, int val,
 int htable_get(htable_t *ht, char *key)
 {
   //TODO: Your code here
-  unsigned int h = hashcode(key);
-  unsigned int i = h % ht->arr_capacity;
-  return list_find(ht->arr[i], key);
+  unsigned int hcode = hashcode(key); //step 1)
+  unsigned int i = hcode % ht->arr_capacity; //step2)
+  return list_find(ht->arr[i], key); //step 3)
 
 }
 
@@ -96,19 +108,22 @@ int htable_get(htable_t *ht, char *key)
 int htable_get_all_tuples(htable_t *ht, kv_t *tuples, int max)
 {
   //TODO: Your code here
-  int count = 0;
-  int i = 0;
-  while(count < max && i < ht->arr_capacity){
+  //cnt keeps track of tuples, int keeps track of ht
+  int cnt = 0; int i = 0;
+
+  //make sure it does not store more than "max" entries
+  while(cnt<max && i<ht->arr_capacity){
     lnode_t* curr = ht->arr[i];
+
+    //stores all key value pairs of current node into tuples 
     while(curr){
-      tuples[count] = curr->tuple;
+      tuples[cnt] = curr->tuple;
       curr = curr->next;
-      count++;
+      cnt++;
     }
     i++;
   }
-  ht->size = count;
-  return count;
+  return cnt;
 
 }
 

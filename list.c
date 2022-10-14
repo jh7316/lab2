@@ -52,41 +52,49 @@ bool list_insert_with_accum(lnode_t **headdp, char *key, int val,
 {
   //TODO: Your code here
   lnode_t *curr=*headdp;
+  
+  //allocating space for new linked list node 
   lnode_t *newNode=malloc(sizeof(lnode_t));
   newNode->tuple.key=key;
   newNode->tuple.val=val;
-  if(curr==NULL){
+
+
+  //Case 1:empty list or new node has smallest key
+  //insert new node at beginning, change head pointer
+  if(curr==NULL || strcmp(key,curr->tuple.key)<0){
      newNode->next = *headdp;
      *headdp=newNode;
      return true;
-  }else{
-     if(strcmp(key,curr->tuple.key)<0){
-        newNode->next=*headdp;
-        *headdp=newNode;
-  	return true;
-     }else{
-	while(curr->next){
-	   if(strcmp(key,(curr->next)->tuple.key)>=0)
-	       curr=curr->next;
- 	   else
-	       break;
-	}
-	if(strcmp(key,curr->tuple.key)==0){
-	   (*accum)(&(curr->tuple.val),val);
-	   return false;
-	
-	}else{
-	   if(curr->next==NULL)
-	      curr->next=newNode;
-	   else{
-	      newNode->next=curr->next;
-	      curr->next=newNode;
-		}
-	   return true;
-	}
-     }
-
   }
+  
+ 
+	
+   //traverse through list
+   while(curr->next){
+     if(strcmp(key,(curr->next)->tuple.key)>=0)
+         curr=curr->next;
+     else
+         break; //traverse through list until the next key > current key 
+   }
+
+   //Case 3:key exists, accumulate value
+   if(strcmp(key,curr->tuple.key)==0){
+      (*accum)(&(curr->tuple.val),val);
+      return false;
+   }else{
+      //Case 4: new node has largest key
+      if(curr->next==NULL)
+	  curr->next=newNode;
+      else{
+ 	  //Case 5: new node has a key value in between the existing keys
+          newNode->next=curr->next;
+          curr->next=newNode;
+	   }
+      return true;
+    }
+     
+
+  
 
 }
 
@@ -102,10 +110,12 @@ int list_find(lnode_t *headp, char *key)
   // TODO: Your code here
   lnode_t *curr=headp; 
   while(curr!=NULL){
+
 	if(strcmp(key,curr->tuple.key)==0){
 	 return curr->tuple.val;
-       }
-       curr=curr->next;
+        }
+      
+        curr=curr->next;
   }
   return -1;
 
@@ -120,8 +130,12 @@ int list_find(lnode_t *headp, char *key)
 int list_get_all_tuples(lnode_t *headp, kv_t *tuples, int max)
 {
   // TODO: Your code here
+  //curr keeps track of linked list
+  //cnt keeps track of tuples array
   lnode_t *curr=headp;
   int cnt=0;
+ 
+  //traverse while cnt and curr are within their range
   while(cnt<max && curr!=NULL){
 	tuples[cnt]=curr->tuple;
        curr=curr->next;

@@ -82,7 +82,8 @@ void int_to_hex(unsigned int x, char *str)
       i--;if(r<10) str[i]=r+ 48;else str[i]=r + 87;
      
   }
-  for(int j=0;j<i;j++){
+  int j;
+  for(j=0;j<i;j++){
       str[j]='0';
   }
 
